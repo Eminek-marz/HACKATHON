@@ -1,0 +1,237 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Doctor Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dashboard-container {
+        padding: 40px 0;
+    }
+
+    .card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        margin-bottom: 20px;
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, #2c3e50, #3498db);
+        color: white;
+        padding: 20px;
+        border: none;
+    }
+
+    .card-header h4 {
+        margin: 0;
+        font-weight: 600;
+    }
+
+    .card-body {
+        padding: 20px;
+        background: white;
+    }
+
+    .btn-primary, .btn-info, .btn-success {
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover, .btn-info:hover, .btn-success:hover {
+        transform: translateY(-2px);
+    }
+
+    .btn-primary {
+        background: #3498db;
+    }
+
+    .btn-info {
+        background: #1abc9c;
+    }
+
+    .btn-success {
+        background: #2ecc71;
+    }
+
+    .btn-secondary {
+        background: #95a5a6;
+    }
+
+    .table th, .table td {
+        vertical-align: middle;
+    }
+
+    .modal-header {
+        background: #3498db;
+        color: white;
+    }
+
+    .modal-footer .btn-secondary {
+        background: #95a5a6;
+    }
+
+    .alert {
+        border-radius: 8px;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+    }
+
+    .no-data {
+        text-align: center;
+        color: #7f8c8d;
+        font-size: 1.1rem;
+        margin-top: 20px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4>Profile Information</h4>
+                </div>
+                <div class="card-body">
+                    <p><strong>Name:</strong> Dr. {{ user.get_full_name }}</p>
+                    <p><strong>Email:</strong> {{ user.email }}</p>
+                    <p><strong>Specialization:</strong> {{ user.doctor.specialization }}</p>
+                    <p><strong>License Number:</strong> {{ user.doctor.license_number }}</p>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h4>Availability</h4>
+                </div>
+                <div class="card-body">
+                    <a href="{% url 'update_schedule' %}" class="btn btn-primary mb-3">Update Schedule</a>
+                    <div>{{ user.doctor.availability|linebreaks }}</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-8">
+            <!-- Today's Appointments -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4>Today's Appointments</h4>
+                </div>
+                <div class="card-body">
+                    {% if appointments %}
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Time</th>
+                                        <th>Patient</th>
+                                        <th>Reason</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for appointment in appointments %}
+                                        <tr>
+                                            <td>{{ appointment.time }}</td>
+                                            <td>{{ appointment.patient.user.get_full_name }}</td>
+                                            <td>{{ appointment.reason|truncatewords:10 }}</td>
+                                            <td>{{ appointment.get_status_display }}</td>
+                                            <td>
+                                                <div class="btn-group">
+                                                    <a href="{% url 'portal:appointment_detail' appointment.pk %}" 
+                                                       class="btn btn-sm btn-info">View</a>
+                                                    <a href="{% url 'portal:create_medical_record' appointment.patient.pk %}" 
+                                                       class="btn btn-sm btn-success">Add Record</a>
+                                                    <button type="button" 
+                                                            class="btn btn-sm btn-primary"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#feedbackModal{{ appointment.pk }}">
+                                                        Add Feedback
+                                                    </button>
+                                                </div>
+
+                                                <!-- Feedback Modal -->
+                                                <div class="modal fade" id="feedbackModal{{ appointment.pk }}" tabindex="-1">
+                                                    <div class="modal-dialog">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title">Add Feedback for {{ appointment.patient.user.get_full_name }}</h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                            </div>
+                                                            <form method="post" action="{% url 'portal:add_feedback' appointment.patient.pk %}">
+                                                                {% csrf_token %}
+                                                                <div class="modal-body">
+                                                                    <div class="mb-3">
+                                                                        <label for="subject" class="form-label">Subject</label>
+                                                                        <input type="text" class="form-control" id="subject" name="subject" required>
+                                                                    </div>
+                                                                    <div class="mb-3">
+                                                                        <label for="message" class="form-label">Message</label>
+                                                                        <textarea class="form-control" id="message" name="message" rows="4" required></textarea>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                                    <button type="submit" class="btn btn-primary">Submit Feedback</button>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="no-data">No appointments scheduled for today.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Recent Medical Records -->
+            <div class="card">
+                <div class="card-header">
+                    <h4>Recent Medical Records</h4>
+                </div>
+                <div class="card-body">
+                    {% if recent_records %}
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Patient</th>
+                                        <th>Diagnosis</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for record in recent_records %}
+                                        <tr>
+                                            <td>{{ record.date_created|date }}</td>
+                                            <td>{{ record.patient.user.get_full_name }}</td>
+                                            <td>{{ record.diagnosis|truncatewords:10 }}</td>
+                                            <td>
+                                                <a href="{% url 'portal:medical_record_detail' record.pk %}" 
+                                                   class="btn btn-sm btn-info">View</a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="no-data">No recent medical records.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

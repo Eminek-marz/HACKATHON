@@ -1,0 +1,219 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block title %}Update Schedule{% endblock %}
+
+{% block extra_css %}
+<style>
+    .schedule-container {
+        background: linear-gradient(to bottom, #f8f9fa 0%, #ffffff 100%);
+        padding: 40px 0;
+        min-height: 100vh;
+    }
+
+    .card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, #2c3e50, #3498db);
+        color: white;
+        padding: 25px;
+        border: none;
+    }
+
+    .card-body {
+        padding: 30px;
+    }
+
+    .form-label {
+        color: #2c3e50;
+        font-weight: 500;
+        margin-bottom: 10px;
+    }
+
+    .form-check {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 10px;
+        transition: all 0.3s ease;
+    }
+
+    .form-check:hover {
+        background: #e9ecef;
+        transform: translateY(-2px);
+    }
+
+    .form-check-input {
+        margin-right: 10px;
+    }
+
+    .form-check-label {
+        color: #34495e;
+        font-weight: 500;
+    }
+
+    .form-control {
+        border-radius: 8px;
+        padding: 12px 15px;
+        border: 1px solid #ced4da;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
+        border-color: #3498db;
+    }
+
+    .time-input {
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #2c3e50, #3498db);
+        border: none;
+        padding: 12px 25px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #3498db, #2c3e50);
+        transform: translateY(-2px);
+    }
+
+    .alert-danger {
+        background-color: #fff2f2;
+        border-color: #ffcdd2;
+        color: #d32f2f;
+        border-radius: 8px;
+        padding: 12px 15px;
+        margin-top: 10px;
+    }
+
+    .section-title {
+        color: #2c3e50;
+        font-size: 1.1rem;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #3498db;
+        display: inline-block;
+    }
+
+    .time-section {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+
+    @media (max-width: 768px) {
+        .card-body {
+            padding: 20px;
+        }
+        
+        .form-check {
+            margin-bottom: 10px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="schedule-container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="text-center m-0">Update Working Hours</h3>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-4">
+                            <h5 class="section-title">Working Days</h5>
+                            <div class="row">
+                                {% for checkbox in form.working_days %}
+                                    <div class="col-md-4 mb-2">
+                                        <div class="form-check">
+                                            {{ checkbox }}
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            {% if form.working_days.errors %}
+                                <div class="alert alert-danger">
+                                    {{ form.working_days.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="time-section">
+                            <h5 class="section-title">Working Hours</h5>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="{{ form.start_time.id_for_label }}" class="form-label">Start Time</label>
+                                    {% render_field form.start_time class="form-control time-input" %}
+                                    {% if form.start_time.errors %}
+                                        <div class="alert alert-danger">
+                                            {{ form.start_time.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="{{ form.end_time.id_for_label }}" class="form-label">End Time</label>
+                                    {% render_field form.end_time class="form-control time-input" %}
+                                    {% if form.end_time.errors %}
+                                        <div class="alert alert-danger">
+                                            {{ form.end_time.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="time-section">
+                            <h5 class="section-title">Break Time</h5>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="{{ form.break_start.id_for_label }}" class="form-label">Break Start (Optional)</label>
+                                    {% render_field form.break_start class="form-control time-input" %}
+                                    {% if form.break_start.errors %}
+                                        <div class="alert alert-danger">
+                                            {{ form.break_start.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="{{ form.break_end.id_for_label }}" class="form-label">Break End (Optional)</label>
+                                    {% render_field form.break_end class="form-control time-input" %}
+                                    {% if form.break_end.errors %}
+                                        <div class="alert alert-danger">
+                                            {{ form.break_end.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-clock"></i> Update Schedule
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,74 @@
+/* Login and Registration Forms */
+.auth-form {
+    max-width: 400px;
+    margin: 2rem auto;
+}
+
+.auth-form .card {
+    border-radius: 10px;
+}
+
+/* Appointment Calendar */
+.calendar-container {
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+}
+
+.time-slot {
+    padding: 0.5rem;
+    margin: 0.25rem;
+    border: 1px solid var(--light-gray);
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.time-slot.available {
+    background-color: var(--success-color);
+    color: white;
+}
+
+.time-slot.booked {
+    background-color: var(--danger-color);
+    color: white;
+    cursor: not-allowed;
+}
+
+/* Medical Records */
+.medical-record {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.prescription-card {
+    border-left: 4px solid var(--secondary-color);
+}
+
+.test-result-card {
+    border-left: 4px solid var(--warning-color);
+}
+
+/* Doctor Profile */
+.doctor-profile {
+    text-align: center;
+    padding: 2rem;
+}
+
+.doctor-profile img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    margin-bottom: 1rem;
+}
+
+/* Responsive Tables */
+@media (max-width: 768px) {
+    .table-responsive {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+} 

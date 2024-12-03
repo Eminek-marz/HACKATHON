@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    /* Landing page specific styles */
+    .hero-section {
+        background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('{% static "images/doctor.jpg" %}');
+        background-size: cover;
+        background-position: center;
+        padding: 100px 0;
+        color: white;
+    }
+    
+    .auth-card {
+        transition: transform 0.3s;
+        margin: 20px;
+    }
+    
+    .auth-card:hover {
+        transform: translateY(-10px);
+    }
+    .container{
+        background: linear-gradient(rgba(255, 255, 255, 0.6), rgba(135, 206, 235, 0.8));
+    }
+</style>
+{% endblock %}
+
+{% block title %}Welcome to Telemedicine{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section text-center">
+    <div class="container">
+        <h1 class="display-4 mb-4">Welcome to Teleemedicine Healthcare Platform</h1>
+        <p class="lead">Streamlined healthcare management for patients and doctors</p>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="container">
+    <div class="row justify-content-center">
+        <!-- Patient Card -->
+        <div class="col-md-5">
+            <div class="card auth-card shadow">
+                <div class="card-body text-center">
+                    <h3 class="card-title mb-4">For Patients</h3>
+                    <p class="card-text mb-4">Access your medical records, schedule appointments, and manage your healthcare journey.</p>
+                    <div class="d-grid gap-3">
+                        <a href="{% url 'accounts:patient_signup' %}" class="btn btn-primary btn-custom">Sign Up as Patient</a>
+                        <a href="{% url 'accounts:login' %}" class="btn btn-outline-primary btn-custom">Patient Login</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Doctor Card -->
+        <div class="col-md-5">
+            <div class="card auth-card shadow">
+                <div class="card-body text-center">
+                    <h3 class="card-title mb-4">For Doctors</h3>
+                    <p class="card-text mb-4">Manage your practice, patient records, and appointment schedule efficiently.</p>
+                    <div class="d-grid gap-3">
+                        <a href="{% url 'accounts:doctor_signup' %}" class="btn btn-success btn-custom">Sign Up as Doctor</a>
+                        <a href="{% url 'accounts:login' %}" class="btn btn-outline-success btn-custom">Doctor Login</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="row mt-5">
+        <div class="col-md-4">
+            <div class="text-center">
+                <h4>Easy Appointment Booking</h4>
+                <p>Schedule and manage appointments with just a few clicks</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="text-center">
+                <h4>Secure Medical Records</h4>
+                <p>Your health information is protected and easily accessible</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="text-center">
+                <h4>Efficient Communication</h4>
+                <p>Direct communication between patients and healthcare providers</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,194 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block title %}Login{% endblock %}
+
+{% block extra_css %}
+<style>
+    .login-container {
+        background: linear-gradient(rgba(255, 255, 255, 0.9), rgba(135, 206, 235, 0.3));
+        min-height: 100vh;
+        padding: 60px 0;
+        display: flex;
+        align-items: center;
+    }
+
+    .card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, #2c3e50, #3498db);
+        color: white;
+        padding: 25px;
+        border: none;
+    }
+
+    .card-header h3 {
+        margin: 0;
+        font-weight: 600;
+        font-size: 1.75rem;
+    }
+
+    .card-body {
+        padding: 40px;
+        background: white;
+    }
+
+    .form-label {
+        font-weight: 500;
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control {
+        border-radius: 8px;
+        padding: 12px 15px;
+        border: 1px solid #ced4da;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
+        border-color: #3498db;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #2c3e50, #3498db);
+        border: none;
+        padding: 12px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #3498db, #2c3e50);
+        transform: translateY(-2px);
+    }
+
+    .alert-danger {
+        border-radius: 8px;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+        background-color: #fff2f2;
+        border-color: #ffcdd2;
+        color: #d32f2f;
+    }
+
+    .signup-links {
+        text-align: center;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid #eee;
+    }
+
+    .signup-links p {
+        color: #666;
+        margin-bottom: 10px;
+    }
+
+    .btn-signup {
+        display: inline-block;
+        padding: 8px 20px;
+        margin: 5px;
+        border-radius: 20px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .btn-patient {
+        color: #2ecc71;
+        border: 1px solid #2ecc71;
+    }
+
+    .btn-patient:hover {
+        background-color: #2ecc71;
+        color: white;
+    }
+
+    .btn-doctor {
+        color: #3498db;
+        border: 1px solid #3498db;
+    }
+
+    .btn-doctor:hover {
+        background-color: #3498db;
+        color: white;
+    }
+
+    .forgot-password {
+        text-align: right;
+        margin-bottom: 20px;
+    }
+
+    .forgot-password a {
+        color: #666;
+        font-size: 0.9rem;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    .forgot-password a:hover {
+        color: #3498db;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="text-center">Welcome Back</h3>
+                    </div>
+                    <div class="card-body">
+                        <form method="post">
+                            {% csrf_token %}
+                            {% for field in form %}
+                                <div class="mb-4">
+                                    <label for="{{ field.id_for_label }}" class="form-label">
+                                        {{ field.label }}
+                                    </label>
+                                    {% render_field field class="form-control" placeholder=field.label %}
+                                    {% if field.errors %}
+                                        <div class="alert alert-danger">
+                                            {{ field.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                            
+                            <div class="forgot-password">
+                                <a href="#">Forgot Password?</a>
+                            </div>
+
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary">Sign In</button>
+                            </div>
+                        </form>
+
+                        <div class="signup-links">
+                            <p>Don't have an account?</p>
+                            <a href="{% url 'accounts:patient_signup' %}" class="btn-signup btn-patient">Sign Up as Patient</a>
+                            <a href="{% url 'accounts:doctor_signup' %}" class="btn-signup btn-doctor">Sign Up as Doctor</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

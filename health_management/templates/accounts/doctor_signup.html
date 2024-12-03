@@ -1,0 +1,233 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block title %}Doctor Sign Up{% endblock %}
+
+{% block extra_css %}
+<style>
+    .registration-container {
+        background: linear-gradient(rgba(255, 255, 255, 0.9), rgba(135, 206, 235, 0.3));
+        padding: 40px 0;
+        min-height: 100vh;
+    }
+
+    .card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        margin-top: 2rem;
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, #2c3e50, #3498db);
+        color: white;
+        padding: 20px;
+        border: none;
+    }
+
+    .card-body {
+        padding: 30px;
+    }
+
+    .form-label {
+        font-weight: 500;
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control {
+        border-radius: 8px;
+        padding: 12px 15px;
+        border: 1px solid #ced4da;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
+        border-color: #3498db;
+    }
+
+    .password-requirements {
+        font-size: 0.9rem;
+        margin-top: 10px;
+        padding: 10px;
+        border-radius: 8px;
+        background-color: #f8f9fa;
+    }
+
+    .requirement-item {
+        display: flex;
+        align-items: center;
+        margin: 5px 0;
+        color: #6c757d;
+    }
+
+    .requirement-item.valid {
+        color: #2ecc71;
+    }
+
+    .requirement-item i {
+        margin-right: 8px;
+        font-size: 1rem;
+    }
+
+    .check-icon {
+        color: #2ecc71;
+        display: none;
+    }
+
+    .requirement-item.valid .check-icon {
+        display: inline;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #2c3e50, #3498db);
+        border: none;
+        padding: 12px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #3498db, #2c3e50);
+        transform: translateY(-2px);
+    }
+
+    .alert-danger {
+        border-radius: 8px;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+    }
+
+    /* License number specific styling */
+    #id_license_number {
+        font-family: monospace;
+        letter-spacing: 1px;
+    }
+
+    .license-info {
+        font-size: 0.85rem;
+        color: #6c757d;
+        margin-top: 0.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="registration-container">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="text-center m-0">Doctor Registration</h3>
+                </div>
+                <div class="card-body">
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        {% for field in form %}
+                            {% if field.name != 'license_number' %}
+                                <div class="mb-4">
+                                    <label for="{{ field.id_for_label }}" class="form-label">
+                                        {{ field.label }}
+                                        {% if field.field.required %}
+                                            <span class="text-danger">*</span>
+                                        {% endif %}
+                                    </label>
+                                    {% render_field field class="form-control" %}
+                                    {% if field.help_text %}
+                                        <small class="form-text text-muted">{{ field.help_text }}</small>
+                                    {% endif %}
+                                    {% if field.errors %}
+                                        <div class="alert alert-danger">
+                                            {{ field.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+
+                        <!-- License Number Field -->
+                        <div class="mb-4">
+                            <label for="id_license_number" class="form-label">
+                                Medical License Number
+                                <span class="text-danger">*</span>
+                            </label>
+                            {% render_field form.license_number class="form-control" placeholder="Enter your medical license number" %}
+                            <div class="license-info">
+                                Please enter your valid medical license number as issued by the medical board.
+                            </div>
+                            {% if form.license_number.errors %}
+                                <div class="alert alert-danger">
+                                    {{ form.license_number.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Create Doctor Account</button>
+                        </div>
+                        
+                        <div class="text-center mt-3">
+                            <p class="mb-0">Already have an account? 
+                                <a href="{% url 'accounts:login' %}" class="text-primary">Login here</a>
+                            </p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const passwordInput = document.querySelector('input[type="password"]');
+    const requirements = {
+        length: { regex: /.{8,}/, text: 'At least 8 characters long' },
+        uppercase: { regex: /[A-Z]/, text: 'Contains uppercase letter' },
+        lowercase: { regex: /[a-z]/, text: 'Contains lowercase letter' },
+        number: { regex: /[0-9]/, text: 'Contains number' },
+        special: { regex: /[^A-Za-z0-9]/, text: 'Contains special character' }
+    };
+
+    if (passwordInput) {
+        // Create requirements list
+        const requirementsList = document.createElement('div');
+        requirementsList.className = 'password-requirements';
+        
+        Object.keys(requirements).forEach(req => {
+            const item = document.createElement('div');
+            item.className = 'requirement-item';
+            item.innerHTML = `
+                <i class="fas fa-check check-icon"></i>
+                <span>${requirements[req].text}</span>
+            `;
+            requirementsList.appendChild(item);
+        });
+
+        // Insert requirements list after password input
+        passwordInput.parentNode.insertBefore(requirementsList, passwordInput.nextSibling);
+
+        // Add password input listener
+        passwordInput.addEventListener('input', function() {
+            const password = this.value;
+            Object.keys(requirements).forEach(req => {
+                const isValid = requirements[req].regex.test(password);
+                const reqElement = requirementsList.querySelector(`div:contains('${requirements[req].text}')`);
+                if (isValid) {
+                    reqElement.classList.add('valid');
+                } else {
+                    reqElement.classList.remove('valid');
+                }
+            });
+        });
+    }
+});
+</script>
+{% endblock %} 
